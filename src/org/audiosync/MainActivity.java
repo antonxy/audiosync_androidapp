@@ -69,16 +69,25 @@ public class MainActivity extends Activity {
 	}
 	
 	private AudioTrack createAudio(byte[] bytes_to_send){
-		boolean[] bits = bytesToBits(bytes_to_send);
+		boolean[] data_bits = bytesToBits(bytes_to_send);
+		
+		//Sync word                                                                                            one additional false
+		boolean[] barker13 = {true, true, true, true, true, false, false, true, true, false, true, false, true, false};
+		
+		boolean[] bits = concatArrays(new boolean[]{false}, data_bits);
+		//             Additional 0 for initial phase  ^
 		
 		int sampleRate = 44100;  // 1/s
 		
 		int carrierFrequency = 4000;  // 1/s
 		double chunkLength = 0.05;  // s
 		
+		int syncToneFrequency = 5000;
+		int syncChunkSamples = (int) (sampleRate * 0.05);
+		
 		int samplesPerChunk = (int) (sampleRate * chunkLength);
-		//                                     + 1 chunk for leading 0
-		int minBufferSize = (samplesPerChunk * (bits.length + 1)) * 2;
+		
+		int minBufferSize = (samplesPerChunk * bits.length + syncChunkSamples * barker13.length) * 2;
 		AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, minBufferSize, AudioTrack.MODE_STATIC);
 		
 		
@@ -86,9 +95,20 @@ public class MainActivity extends Activity {
 		byte[] zeroChunck = generateTone(carrierFrequency, sampleRate, samplesPerChunk, Math.PI);
 		byte[] oneChunck = generateTone(carrierFrequency, sampleRate, samplesPerChunk, 0);
 		
-		byte[] sound = new byte[0];
-		sound = concatArrays(sound, zeroChunck);  // Additional 0 for differential phase shift
+		byte[] syncChunk = generateTone(syncToneFrequency, sampleRate, syncChunkSamples, 0);
+		byte[] silence = new byte[syncChunkSamples * 2];
 		
+		byte[] sound = new byte[0];
+		
+		//Sync code
+		for(int b = 0; b < barker13.length; b++){
+			if(barker13[b])
+				sound = concatArrays(sound, syncChunk);
+			else
+				sound = concatArrays(sound, silence);
+		}
+		
+		//Data
 		for(int b = 0; b < bits.length; b++){
 			if(bits[b])
 				sound = concatArrays(sound, oneChunck);
@@ -105,11 +125,11 @@ public class MainActivity extends Activity {
 		boolean[] bits = new boolean[bytes.length*8];
 		for (int b = 0; b < bytes.length; b++){
 			int val = bytes[b];
-		     for (int i = 0; i < 8; i++)
-		     {
-		        bits[b*8 + i] = (val & 128) == 0 ? false : true;
-		        val <<= 1;
-		     }
+			for (int i = 0; i < 8; i++)
+			{
+			   bits[b*8 + i] = (val & 128) == 0 ? false : true;
+			   val <<= 1;
+			}
 		}
 		return bits;
 	}
@@ -118,21 +138,28 @@ public class MainActivity extends Activity {
 		final byte generatedSnd[] = new byte[2 * samples];
 		int idx = 0;
         for (int i = 0; i < samples; ++i) {
-            double sample = Math.sin(frequency * (2 * Math.PI) * i / sampleRate + phaseShift);
-            
-            // convert to 16 bit pcm sound array
-            // assumes the sample buffer is normalised.
+	        double sample = Math.sin(frequency * (2 * Math.PI) * i / sampleRate + phaseShift);
+	        
+	        // convert to 16 bit pcm sound array
+	        // assumes the sample buffer is normalised.
 	        // scale to maximum amplitude
-            final short val = (short) ((sample * 32767));
-            // in 16 bit wav PCM, first byte is the low order byte
-            generatedSnd[idx++] = (byte) (val & 0x00ff);
-            generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
+	        final short val = (short) ((sample * 32767));
+	        // in 16 bit wav PCM, first byte is the low order byte
+	        generatedSnd[idx++] = (byte) (val & 0x00ff);
+	        generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
         }
         return generatedSnd;
 	}
 	
 	private byte[] concatArrays(byte[] a, byte[] b){
 		byte[] c = new byte[a.length + b.length];
+		System.arraycopy(a, 0, c, 0, a.length);
+		System.arraycopy(b, 0, c, a.length, b.length);
+		return c;
+	}
+	
+	private boolean[] concatArrays(boolean[] a, boolean[] b){
+		boolean[] c = new boolean[a.length + b.length];
 		System.arraycopy(a, 0, c, 0, a.length);
 		System.arraycopy(b, 0, c, a.length, b.length);
 		return c;
