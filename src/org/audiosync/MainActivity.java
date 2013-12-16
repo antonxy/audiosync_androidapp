@@ -27,11 +27,18 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
-				byte[] bytes_to_send = new byte[3];
+				int[] bytes_to_send = new int[3];
 				try {
-					bytes_to_send[0] = Byte.parseByte(sceneInp.getText().toString());
-					bytes_to_send[1] = Byte.parseByte(shotInp.getText().toString());
-					bytes_to_send[2] = Byte.parseByte(takeInp.getText().toString());
+					bytes_to_send[0] = Integer.parseInt(sceneInp.getText().toString());
+					bytes_to_send[1] = Integer.parseInt(shotInp.getText().toString());
+					bytes_to_send[2] = Integer.parseInt(takeInp.getText().toString());
+					for (int i : bytes_to_send) {
+						if(i < 0 || i > 255){
+							Toast.makeText(MainActivity.this, "Numbers have to be between 0 and 255", Toast.LENGTH_SHORT).show();
+							return;
+						}
+					}
+					
 				} catch (NumberFormatException e) {
 					Toast.makeText(MainActivity.this, "invalid numbers in textfields", Toast.LENGTH_SHORT).show();
 					return;
@@ -68,7 +75,7 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
-	private AudioTrack createAudio(byte[] bytes_to_send){
+	private AudioTrack createAudio(int[] bytes_to_send){
 		boolean[] data_bits = bytesToBits(bytes_to_send);
 		
 		//Sync word                                                                                            one additional false
@@ -121,10 +128,10 @@ public class MainActivity extends Activity {
 		return track;
 	}
 
-	private boolean[] bytesToBits(byte[] bytes){
-		boolean[] bits = new boolean[bytes.length*8];
-		for (int b = 0; b < bytes.length; b++){
-			int val = bytes[b];
+	private boolean[] bytesToBits(int[] bytes_to_send){
+		boolean[] bits = new boolean[bytes_to_send.length*8];
+		for (int b = 0; b < bytes_to_send.length; b++){
+			int val = bytes_to_send[b];
 			for (int i = 0; i < 8; i++)
 			{
 			   bits[b*8 + i] = (val & 128) == 0 ? false : true;
