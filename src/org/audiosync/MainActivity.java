@@ -27,7 +27,7 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
-				int[] bytes_to_send = new int[3];
+				int[] bytes_to_send = new int[4];
 				try {
 					bytes_to_send[0] = Integer.parseInt(sceneInp.getText().toString());
 					bytes_to_send[1] = Integer.parseInt(shotInp.getText().toString());
@@ -38,6 +38,13 @@ public class MainActivity extends Activity {
 							return;
 						}
 					}
+					
+					int checksum = 0;
+					for (int i : bytes_to_send) {
+						checksum += i;
+					}
+					checksum %= 255;
+					bytes_to_send[3] = checksum;
 					
 				} catch (NumberFormatException e) {
 					Toast.makeText(MainActivity.this, "invalid numbers in textfields", Toast.LENGTH_SHORT).show();
