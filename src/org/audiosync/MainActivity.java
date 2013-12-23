@@ -8,30 +8,34 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+
+	private NumberChooser sceneInp;
+	private NumberChooser shotInp;
+	private NumberChooser takeInp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
 		final Button goBtn = (Button) findViewById(R.id.goButton);
-		final Button nextTakeBtn = (Button) findViewById(R.id.nextButton);
-		final Button clearTakeBtn = (Button) findViewById(R.id.clearTakeBtn);
-		final EditText sceneInp = (EditText) findViewById(R.id.sceneInp);
-		final EditText shotInp = (EditText) findViewById(R.id.shotInp);
-		final EditText takeInp = (EditText) findViewById(R.id.takeInp);
+		
+		sceneInp = (NumberChooser) findViewById(R.id.sceneChooser);
+		shotInp = (NumberChooser) findViewById(R.id.shotChooser);
+		takeInp = (NumberChooser) findViewById(R.id.takeChooser);
+		
 		goBtn.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
 				int[] bytes_to_send = new int[4];
 				try {
-					bytes_to_send[0] = Integer.parseInt(sceneInp.getText().toString());
-					bytes_to_send[1] = Integer.parseInt(shotInp.getText().toString());
-					bytes_to_send[2] = Integer.parseInt(takeInp.getText().toString());
+					bytes_to_send[0] = sceneInp.getNumber();
+					bytes_to_send[1] = shotInp.getNumber();
+					bytes_to_send[2] = takeInp.getNumber();
 					for (int i : bytes_to_send) {
 						if(i < 0 || i > 255){
 							Toast.makeText(MainActivity.this, "Numbers have to be between 0 and 255", Toast.LENGTH_SHORT).show();
@@ -54,24 +58,7 @@ public class MainActivity extends Activity {
 				audio.play();
 			}
 		});
-		nextTakeBtn.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				try {
-					takeInp.setText(String.valueOf(Integer.parseInt(takeInp.getText().toString()) + 1));
-				} catch (NumberFormatException e) {
-					takeInp.setText(R.string.scene_default_value);
-				}
-			}
-		});
-		clearTakeBtn.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				takeInp.setText(R.string.scene_default_value);
-			}
-		});
+
 		
 	}
 

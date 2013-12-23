@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/plusButton"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:text="@string/plus"
+        android:textSize="@dimen/scene_text_size" />
+
+    <EditText
+        android:id="@+id/numberField"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:inputType="number"
+        android:text="@string/scene_default_value"
+        android:textSize="@dimen/scene_text_size" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/minusButton"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:text="@string/minus"
+        android:textSize="@dimen/scene_text_size" />
+
+    <Button
+        android:id="@+id/oneButton"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:text="@string/set_one"
+        android:textSize="@dimen/scene_text_size" />
+
+</LinearLayout>

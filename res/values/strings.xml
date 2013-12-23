@@ -6,8 +6,11 @@
     <string name="hello_world">Hello world!</string>
     <string name="scene_delim">-</string>
     <string name="next_take">Next Take</string>
-    <string name="go">GO!</string>
+    <string name="go">S\nY\nN\nC</string>
     <string name="scene_default_value">1</string>
     <string name="clear_take">Clear Take</string>
+    <string name="set_one">1</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
 
 </resources>

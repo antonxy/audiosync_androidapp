@@ -1,93 +1,37 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<!-- </android.support.v7.widget.GridLayout> -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity" >
+    android:orientation="horizontal" >
 
-    <EditText
-        android:id="@+id/sceneInp"
+    <org.audiosync.NumberChooser
+        android:id="@+id/sceneChooser"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:ems="@integer/scene_text_lenght"
-        android:inputType="number"
-        android:text="@string/scene_default_value"
-        android:textSize="@dimen/scene_text_size" >
+        android:layout_height="fill_parent"
+        android:layout_weight="1" >
+    </org.audiosync.NumberChooser>
 
-        <requestFocus />
-    </EditText>
-
-    <TextView
-        android:id="@+id/textView1"
+    <org.audiosync.NumberChooser
+        android:id="@+id/shotChooser"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/sceneInp"
-        android:text="@string/scene_delim"
-        android:textSize="@dimen/scene_text_size" />
+        android:layout_height="fill_parent"
+        android:layout_weight="1" >
+    </org.audiosync.NumberChooser>
 
-    <EditText
-        android:id="@+id/shotInp"
+    <org.audiosync.NumberChooser
+        android:id="@+id/takeChooser"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/textView1"
-        android:ems="@integer/scene_text_lenght"
-        android:inputType="number"
-        android:text="@string/scene_default_value"
-        android:textSize="@dimen/scene_text_size" />
-
-    <TextView
-        android:id="@+id/TextView01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/shotInp"
-        android:text="@string/scene_delim"
-        android:textSize="@dimen/scene_text_size" />
-
-    <EditText
-        android:id="@+id/takeInp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/TextView01"
-        android:ems="@integer/scene_text_lenght"
-        android:inputType="number"
-        android:text="@string/scene_default_value"
-        android:textSize="@dimen/scene_text_size" />
-
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/sceneInp"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/takeInp"
-        android:text="@string/next_take" />
+        android:layout_height="fill_parent"
+        android:layout_weight="1" >
+    </org.audiosync.NumberChooser>
 
     <Button
         android:id="@+id/goButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/nextButton"
-        android:layout_toRightOf="@+id/nextButton"
-        android:text="@string/go" />
-
-    <Button
-        android:id="@+id/clearTakeBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/sceneInp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/takeInp"
-        android:text="@string/clear_take" />
-
-</RelativeLayout>
+        android:layout_height="fill_parent"
+        android:layout_weight="0.44"
+        android:text="@string/go"
+        android:textSize="@dimen/scene_text_size" />
+    
+</LinearLayout>
