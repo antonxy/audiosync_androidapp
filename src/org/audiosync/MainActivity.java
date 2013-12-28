@@ -1,6 +1,7 @@
 package org.audiosync;
 
 import android.app.Activity;
+import android.content.pm.FeatureInfo;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -72,9 +73,6 @@ public class MainActivity extends Activity {
 	private AudioTrack createAudio(int[] bytes_to_send){
 		boolean[] data_bits = bytesToBits(bytes_to_send);
 		
-		//Sync word                                                                                            one additional false
-		boolean[] barker13 = {true, true, true, true, true, false, false, true, true, false, true, false, true, false};
-		
 		boolean[] bits = concatArrays(new boolean[]{false}, data_bits);
 		//             Additional 0 for initial phase  ^
 		
@@ -83,33 +81,22 @@ public class MainActivity extends Activity {
 		int carrierFrequency = 4000;  // 1/s
 		double chunkLength = 0.05;  // s
 		
-		int syncToneFrequency = 5000;
-		int syncChunkSamples = (int) (sampleRate * 0.05);
+		double syncToneFrequency0 = 3000;
+		double syncToneFrequency1 = 6000;
+		double syncToneDuration = 0.5;
 		
 		int samplesPerChunk = (int) (sampleRate * chunkLength);
 		
-		int minBufferSize = (samplesPerChunk * bits.length + syncChunkSamples * barker13.length) * 2;
+		int minBufferSize = (int) ((samplesPerChunk * bits.length + syncToneDuration * sampleRate) * 2);
 		AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, minBufferSize, AudioTrack.MODE_STATIC);
 		
+		//Sync tone
+		byte[] sound = generateChirp(syncToneFrequency0, syncToneFrequency1, syncToneDuration, sampleRate);
 		
-		
+		//Data
 		byte[] zeroChunck = generateTone(carrierFrequency, sampleRate, samplesPerChunk, Math.PI);
 		byte[] oneChunck = generateTone(carrierFrequency, sampleRate, samplesPerChunk, 0);
 		
-		byte[] syncChunk = generateTone(syncToneFrequency, sampleRate, syncChunkSamples, 0);
-		byte[] silence = new byte[syncChunkSamples * 2];
-		
-		byte[] sound = new byte[0];
-		
-		//Sync code
-		for(int b = 0; b < barker13.length; b++){
-			if(barker13[b])
-				sound = concatArrays(sound, syncChunk);
-			else
-				sound = concatArrays(sound, silence);
-		}
-		
-		//Data
 		for(int b = 0; b < bits.length; b++){
 			if(bits[b])
 				sound = concatArrays(sound, oneChunck);
@@ -140,6 +127,26 @@ public class MainActivity extends Activity {
 		int idx = 0;
         for (int i = 0; i < samples; ++i) {
 	        double sample = Math.sin(frequency * (2 * Math.PI) * i / sampleRate + phaseShift);
+	        
+	        // convert to 16 bit pcm sound array
+	        // assumes the sample buffer is normalised.
+	        // scale to maximum amplitude
+	        final short val = (short) ((sample * 32767));
+	        // in 16 bit wav PCM, first byte is the low order byte
+	        generatedSnd[idx++] = (byte) (val & 0x00ff);
+	        generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
+        }
+        return generatedSnd;
+	}
+	
+	private byte[] generateChirp(double freq0, double freq1, double duration, int sampleRate){
+		int samples = (int) (duration * sampleRate);
+		final byte generatedSnd[] = new byte[2 * samples];
+		int idx = 0;
+		double beta = (freq1-freq0)/duration;
+        for (int i = 0; i < samples; ++i) {
+        	double t = ((double)i) / sampleRate;
+	        double sample = Math.cos(2 * Math.PI * (freq0 * t + 0.5 * beta * t * t));
 	        
 	        // convert to 16 bit pcm sound array
 	        // assumes the sample buffer is normalised.
