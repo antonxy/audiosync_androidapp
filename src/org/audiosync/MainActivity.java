@@ -70,14 +70,12 @@ public class MainActivity extends Activity {
 	}
 	
 	private AudioTrack createAudio(int[] bytes_to_send){
-		boolean[] data_bits = bytesToBits(bytes_to_send);
-		
-		boolean[] bits = concatArrays(new boolean[]{false}, data_bits);
-		//             Additional 0 for initial phase  ^
+		boolean[] bits = bytesToBits(bytes_to_send);
 		
 		int sampleRate = 48000;  // 1/s
 		
-		int carrierFrequency = 4000;  // 1/s
+		int carrierFrequency0 = 5500;  // 1/s
+		int carrierFrequency1 = 6000;  // 1/s
 		double chunkLength = 0.02;  // s
 		
 		double syncToneFrequency0 = 3000;
@@ -93,8 +91,8 @@ public class MainActivity extends Activity {
 		byte[] sound = generateChirp(syncToneFrequency0, syncToneFrequency1, syncToneDuration, sampleRate);
 		
 		//Data
-		byte[] zeroChunck = generateTone(carrierFrequency, sampleRate, samplesPerChunk, Math.PI);
-		byte[] oneChunck = generateTone(carrierFrequency, sampleRate, samplesPerChunk, 0);
+		byte[] zeroChunck = generateTone(carrierFrequency0, sampleRate, samplesPerChunk);
+		byte[] oneChunck = generateTone(carrierFrequency1, sampleRate, samplesPerChunk);
 		
 		for(int b = 0; b < bits.length; b++){
 			if(bits[b])
@@ -121,11 +119,11 @@ public class MainActivity extends Activity {
 		return bits;
 	}
 	
-	private byte[] generateTone(int frequency, int sampleRate, int samples, double phaseShift){
+	private byte[] generateTone(int frequency, int sampleRate, int samples){
 		final byte generatedSnd[] = new byte[2 * samples];
 		int idx = 0;
         for (int i = 0; i < samples; ++i) {
-	        double sample = Math.sin(frequency * (2 * Math.PI) * i / sampleRate + phaseShift);
+	        double sample = Math.sin(frequency * (2 * Math.PI) * i / sampleRate);
 	        
 	        // convert to 16 bit pcm sound array
 	        // assumes the sample buffer is normalised.
