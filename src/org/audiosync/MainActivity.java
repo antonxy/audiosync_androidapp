@@ -1,7 +1,6 @@
 package org.audiosync;
 
 import android.app.Activity;
-import android.content.pm.FeatureInfo;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
@@ -76,14 +75,14 @@ public class MainActivity extends Activity {
 		boolean[] bits = concatArrays(new boolean[]{false}, data_bits);
 		//             Additional 0 for initial phase  ^
 		
-		int sampleRate = 44100;  // 1/s
+		int sampleRate = 48000;  // 1/s
 		
 		int carrierFrequency = 4000;  // 1/s
-		double chunkLength = 0.05;  // s
+		double chunkLength = 0.02;  // s
 		
 		double syncToneFrequency0 = 3000;
 		double syncToneFrequency1 = 6000;
-		double syncToneDuration = 0.5;
+		double syncToneDuration = 0.2;
 		
 		int samplesPerChunk = (int) (sampleRate * chunkLength);
 		
